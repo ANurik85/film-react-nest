@@ -4,17 +4,20 @@ import { FilmsRepository } from '../repository/films.repository';
 
 describe('FilmsService', () => {
   let service: FilmsService;
+  let repository: Partial<FilmsRepository>;
 
   beforeEach(async () => {
+    repository = {
+      findAll: jest.fn(),
+      findById: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FilmsService,
         {
-          provide: FilmsRepository,
-          useValue: {
-            findAll: jest.fn(),
-            findById: jest.fn(),
-          },
+          provide: 'FilmsRepository',
+          useValue: repository,
         },
       ],
     }).compile();
