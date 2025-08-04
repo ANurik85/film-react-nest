@@ -1,0 +1,83 @@
+services:
+  # Сервис бэкенда
+  backend:
+    build:
+      context: ./backend
+    # Указываем имя образа для загрузки в реестр
+    image: ghcr.io/anurik85/film-react-nest-backend
+    container_name: film-backend
+    restart: unless-stopped
+    env_file:
+      - ./backend/.env
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # Сервис базы данных PostgreSQL
+  db:
+    image: postgres:15-alpine
+    container_name: film-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+  # Сервис pgAdmin для управления базой данных
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: film-pgadmin
+    restart: unless-stopped
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@example.com
+      - PGADMIN_DEFAULT_PASSWORD=admin
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - app-network
+    depends_on:
+      - db
+
+  # Сервис Nginx (выступает в роли фронтенда)
+  nginx:
+    build:
+      context: ./nginx
+    image: ghcr.io/anurik85/film-react-nest-nginx
+    container_name: film-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    volumes:
+      # Этот volume будет содержать результат сборки фронтенда
+      - react_build:/usr/share/nginx/html
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  # Вспомогательный сервис для сборки фронтенда.
+  # Он не будет запущен, но его результат сборки будет использован Nginx.
+  frontend-builder:
+    build:
+      context: ./frontend
+    image: ghcr.io/anurik85/film-react-nest-frontend
+    volumes:
+      - react_build:/usr/share/nginx/html
+
+# Определяем именованные volumes для сохранения данных
+volumes:
+  pgdata:
+  pgadmin-data:
+  react_build:
+
+# Определяем общую сеть для взаимодействия контейнеров
+networks:
+  app-network:
+    driver: bridge
