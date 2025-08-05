@@ -3,12 +3,14 @@ name: Build and Push Docker Images to GHCR
 on:
   push:
     branches:
-      - '**'
-    tags:
-      - '**'
+      - main
+      - review-3
+  pull_request:
+    branches:
+      - main
 
 env:
-  GHCR_USERNAME: ${{ github.repository_owner | lower}}
+  GHCR_USERNAME: ${{ github.repository_owner }}
   REPO_NAME: film-react-nest
 
 jobs:
@@ -16,10 +18,14 @@ jobs:
     runs-on: ubuntu-latest
 
     permissions:
-      contents: read
+      contents: write
       packages: write
 
     steps:
+      - name: set lower case owner name
+        run: |
+          echo "GHCR_USERNAME=$(echo ${{ env.GHCR_USERNAME }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV 
+        
       - name: Checkout repository
         uses: actions/checkout@v4
 
