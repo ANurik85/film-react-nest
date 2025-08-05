@@ -3,7 +3,10 @@ name: Build and Push Docker Images to GHCR
 on:
   push:
     branches:
-      - main
+      - '**'
+    tags:
+      - '**'
+
 env:
   GHCR_USERNAME: ${{ github.repository_owner | lower}}
   REPO_NAME: film-react-nest
