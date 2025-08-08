@@ -1,7 +1,5 @@
 services:
   backend:
-    build:
-      context: ./backend
     image: ghcr.io/anurik85/film-react-nest-backend:latest
     container_name: film-backend
     restart: unless-stopped
@@ -42,8 +40,6 @@ services:
       - db
 
   nginx:
-    build:
-      context: ./nginx
     image: ghcr.io/anurik85/film-react-nest-nginx:latest
     container_name: film-nginx
     restart: unless-stopped
@@ -61,8 +57,6 @@ services:
       - backend
 
   frontend-builder:
-    build:
-      context: ./frontend
     image: ghcr.io/anurik85/film-react-nest-frontend:latest
     volumes:
       - react_build:/usr/share/nginx/html
