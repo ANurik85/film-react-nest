@@ -31,6 +31,10 @@ MongoDB должна быть установлена и запущена.
 
 Для проверки отправьте тестовый запрос с помощью Postman или `curl`.
 
+## Другие информации
 
+### Cсылки на задеплоенный проект и репозиторий
 
+* [Репозиторий](https://github.com/ANurik85/film-react-nest)
 
+* [Проект](https://film.students.nomorepartiessbs.ru/)
